@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+'use client'
+
 /* eslint-disable @next/next/no-img-element */
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent } from '@/components/ui/tabs'
@@ -23,9 +26,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu'
+import { DialogDemo } from '@/components/Dialog'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function Dashboard() {
+  function handleAddTransaction() {}
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
@@ -64,12 +69,7 @@ export default function Dashboard() {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Button size="sm" className="h-8 gap-1">
-                  <PlusCircle className="h-3.5 w-3.5" />
-                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                    Add Product
-                  </span>
-                </Button>
+                <DialogDemo />
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

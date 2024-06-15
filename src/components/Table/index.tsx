@@ -21,8 +21,16 @@ import {
 
 type TransactionType = 'income' | 'outcome'
 
-interface TransactionsTableProps {
-  transactionType?: TransactionType
+export interface TableRow {
+  id?: number
+  name: string
+  price: number
+  created_at: string
+  transactionType: TransactionType
+}
+
+export interface TransactionsTableProps {
+  data?: TableRow[]
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
