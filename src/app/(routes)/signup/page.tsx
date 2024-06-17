@@ -22,6 +22,8 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import axios from 'axios'
+import { useRouter } from 'next/navigation'
 
 const userSignUpFormSchema = z.object({
   firstName: z
@@ -44,6 +46,8 @@ type UserSignUpFormSchemaType = z.infer<typeof userSignUpFormSchema>
 export default function SignUpForm() {
   const [createNewUser, setCreateNewUser] = useState<any>()
 
+  const router = useRouter()
+
   const { handleSubmit, register, formState, reset } =
     useForm<UserSignUpFormSchemaType>({
       resolver: zodResolver(userSignUpFormSchema),
@@ -52,12 +56,24 @@ export default function SignUpForm() {
   const { errors, isSubmitting } = formState
 
   async function handleCreateNewUser(data: any) {
-    await new Promise((resolve) => setTimeout(resolve, 1))
+    const { firstName, lastName, ...rest } = data
 
-    console.log(data)
+    const newData = {
+      name: `${firstName} ${lastName}`,
+      ...rest,
+    }
 
-    setCreateNewUser(data)
-    // reset()
+    try {
+      axios.post('http://localhost/4000/users', {
+        newData,
+      })
+
+      setCreateNewUser(newData)
+      reset()
+      router.push('/')
+    } catch (error) {
+      console.error('Error: ', error)
+    }
   }
 
   return (
@@ -78,7 +94,7 @@ export default function SignUpForm() {
                   <div className="flex flex-col gap-1">
                     <Input
                       id="first-name"
-                      placeholder="Max"
+                      placeholder="John"
                       required
                       {...register('firstName')}
                     />
@@ -94,7 +110,7 @@ export default function SignUpForm() {
                   <div className="flex flex-col gap-1">
                     <Input
                       id="last-name"
-                      placeholder="Robinson"
+                      placeholder="Doe"
                       required
                       {...register('lastName')}
                     />
@@ -112,7 +128,7 @@ export default function SignUpForm() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="m@example.com"
+                    placeholder="johndoe@example.com"
                     required
                     {...register('email')}
                   />
@@ -139,7 +155,12 @@ export default function SignUpForm() {
                   )}
                 </div>
               </div>
-              <Button disabled={isSubmitting} type="submit" className="w-full">
+              <Button
+                disabled={isSubmitting}
+                type="submit"
+                className="w-full"
+                onClick={handleCreateNewUser}
+              >
                 Create an account
               </Button>
             </div>

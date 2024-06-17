@@ -19,6 +19,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 const userSignInFormSchema = z.object({
   email: z
@@ -33,6 +34,8 @@ type UserSignInFormSchemaType = z.infer<typeof userSignInFormSchema>
 export default function LoginForm() {
   const [user, setUser] = useState<any>()
 
+  const router = useRouter()
+
   const { handleSubmit, register, formState, reset } =
     useForm<UserSignInFormSchemaType>({
       resolver: zodResolver(userSignInFormSchema),
@@ -41,15 +44,14 @@ export default function LoginForm() {
   const { errors, isSubmitting } = formState
 
   async function handleCreateUser(data: any) {
-    await new Promise((resolve) => setTimeout(resolve, 1))
-
-    console.log(data)
-
-    setUser(data)
-    reset()
+    try {
+      setUser(data)
+      reset()
+      router.push('/')
+    } catch (error) {
+      console.error('Error: ', error)
+    }
   }
-
-  console.log(errors)
 
   return (
     <div className="h-screen flex justify-center items-center">

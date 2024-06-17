@@ -21,6 +21,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 
+import axios from 'axios'
+
 const createTransacationFormSchema = z.object({
   name: z
     .string()
@@ -48,17 +50,24 @@ export function DialogDemo(props: DialogProps) {
   const { errors, isSubmitting } = formState
 
   async function handleCreateTransaction(data: any) {
-    await new Promise((resolve) => setTimeout(resolve, 1))
+    try {
+      const newData = {
+        userId: transactionsList?.length ?? 0,
+        ...data,
+      }
 
-    const newData = {
-      id: transactionsList?.length ?? 0,
-      ...data,
+      axios.post('http://localhost:4000/transactions', {
+        newData,
+      })
+
+      setTransactionData(newData)
+      setTransactionsList((prevState: any) => [...prevState, newData])
+
+      setIsOpen(false)
+      reset()
+    } catch (error) {
+      console.error('Error: ', error)
     }
-    setTransactionData(newData)
-    setTransactionsList((prevState: any) => [...prevState, newData])
-
-    setIsOpen(false)
-    reset()
   }
 
   return (

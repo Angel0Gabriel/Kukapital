@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MoreHorizontal } from 'lucide-react'
+import axios from 'axios'
 
 import {
   Table,
@@ -18,6 +20,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from '@/components/ui/dropdown-menu'
+import { useEffect, useState } from 'react'
 
 type TransactionType = 'income' | 'outcome'
 
@@ -25,8 +28,8 @@ export interface TableRow {
   id?: number
   name: string
   price: number
-  created_at: string
-  transactionType: TransactionType
+  date: string
+  type: TransactionType
 }
 
 export interface TransactionsTableProps {
@@ -35,6 +38,28 @@ export interface TransactionsTableProps {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function TransactionsTable(props: TransactionsTableProps) {
+  async function fetchTransactions() {
+    try {
+      const response = await axios.get('http://localhost:4000/transactions')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching transactions:', error)
+      return []
+    }
+  }
+
+  const [transactionsListData, setTransactionsListData] =
+    useState<TransactionsTableProps>({ data: [] })
+
+  useEffect(() => {
+    async function getTransactions() {
+      const data = await fetchTransactions()
+      setTransactionsListData({ data })
+    }
+
+    getTransactions()
+  }, [])
+
   return (
     <Table>
       <TableHeader>
@@ -53,35 +78,49 @@ export default function TransactionsTable(props: TransactionsTableProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow>
-          <TableCell className="hidden sm:table-cell"></TableCell>
-          <TableCell className="font-medium">Laser Lemonade Machine</TableCell>
-          <TableCell>
-            <Badge variant="outline">Income</Badge>
-          </TableCell>
-          <TableCell className="hidden md:table-cell">$499.99</TableCell>
+        {transactionsListData.data?.map((value) => {
+          console.log(value)
+          return (
+            <TableRow key={value.id}>
+              <TableCell className="hidden sm:table-cell"></TableCell>
+              <TableCell className="font-medium">{value.name}</TableCell>
+              <TableCell>
+                <Badge variant="outline">{value.type}</Badge>
+              </TableCell>
+              <TableCell className="hidden md:table-cell">
+                ${value.price}
+              </TableCell>
 
-          <TableCell className="hidden md:table-cell">
-            2023-07-12 10:42 AM
-          </TableCell>
-          <TableCell>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button aria-haspopup="true" size="icon" variant="ghost">
-                  <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">Toggle menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem>Edit</DropdownMenuItem>
-                <DropdownMenuItem className="hover:text-red-600">
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </TableCell>
-        </TableRow>
+              <TableCell className="hidden md:table-cell">
+                {new Date(value.date).toLocaleDateString('pt-BR', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit',
+                  hour12: true,
+                })}
+              </TableCell>
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">Toggle menu</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuItem className="cursor-pointer">
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="hover:text-red-600 cursor-pointer">
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          )
+        })}
       </TableBody>
     </Table>
   )

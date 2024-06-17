@@ -27,9 +27,20 @@ import {
   DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu'
 import { DialogDemo } from '@/components/Dialog'
+import { useState } from 'react'
 
 export default function Dashboard() {
-  function handleAddTransaction() {}
+  const [isChecked, setIsChecked] = useState<{
+    income: boolean
+    outcome: boolean
+  }>()
+
+  function toggleCheckbox(type: 'income' | 'outcome') {
+    setIsChecked((prevState) => ({
+      income: type === 'income' ? !prevState?.income : false,
+      outcome: type === 'outcome' ? !prevState?.outcome : false,
+    }))
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -62,10 +73,20 @@ export default function Dashboard() {
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Filter by</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuCheckboxItem checked>
+                    <DropdownMenuCheckboxItem
+                      className="cursor-pointer"
+                      checked={isChecked?.income}
+                      onClick={() => toggleCheckbox('income')}
+                    >
                       Income
                     </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem>Outcome</DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      className="cursor-pointer"
+                      checked={isChecked?.outcome}
+                      onClick={() => toggleCheckbox('outcome')}
+                    >
+                      Outcome
+                    </DropdownMenuCheckboxItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
 
@@ -79,7 +100,7 @@ export default function Dashboard() {
                       className="overflow-hidden rounded-full"
                     >
                       <img
-                        src="https://github.com/Angel0Gabriel.png"
+                        src="https://github.com/github.png"
                         width={36}
                         height={36}
                         alt="Avatar"
@@ -97,7 +118,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <TabsContent value="all">
+            <TabsContent value="all" className="max-h-[89vh] overflow-y-auto">
               <Card x-chunk="dashboard-06-chunk-0">
                 <div className="flex items-center justify-between">
                   <CardHeader>
@@ -110,12 +131,12 @@ export default function Dashboard() {
                 <CardContent>
                   <TransactionsTable />
                 </CardContent>
-                <CardFooter>
+                {/* <CardFooter>
                   <div className="text-xs text-muted-foreground">
                     Showing <strong>1-10</strong> of <strong>32</strong>{' '}
                     transactions
                   </div>
-                </CardFooter>
+                </CardFooter> */}
               </Card>
             </TabsContent>
           </Tabs>
